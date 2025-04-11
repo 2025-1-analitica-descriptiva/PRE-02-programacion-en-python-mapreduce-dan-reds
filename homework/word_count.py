@@ -5,7 +5,9 @@
 import fileinput
 import glob
 import os.path
+from pprint import pprint
 import time
+import string
 from itertools import groupby
 
 
@@ -17,9 +19,22 @@ from itertools import groupby
 # original se llama text0.txt, el archivo generado se llamará text0_1.txt,
 # text0_2.txt, etc.
 #
+
 def copy_raw_files_to_input_folder(n):
     """Funcion copy_files"""
 
+    if not os.path.exists("files/input"):
+        os.makedirs("files/input")
+
+    for file in glob.glob("files/raw/*"):
+        for i in range(1, n + 1):
+            with open(file, "r", encoding="utf-8") as f:
+                with open(
+                    f"files/input/{os.path.basename(file).split('.')[0]}_{i}.txt",
+                    "w",
+                    encoding="utf-8",
+                ) as f2:
+                    f2.write(f.read())
 
 #
 # Escriba la función load_input que recive como parámetro un folder y retorna
@@ -36,8 +51,16 @@ def copy_raw_files_to_input_folder(n):
 #     ('text2.txt'. 'hypotheses.')
 #   ]
 #
+
 def load_input(input_directory):
     """Funcion load_input"""
+
+    sequence = []
+    files = glob.glob(f"{input_directory}/*")
+    with fileinput.input(files=files) as f:
+        for line in f:
+            sequence.append((fileinput.filename(), line))
+    return sequence
 
 
 #
@@ -45,9 +68,14 @@ def load_input(input_directory):
 # función anterior y retorna una lista de tuplas (clave, valor). Esta función
 # realiza el preprocesamiento de las líneas de texto,
 #
+
 def line_preprocessing(sequence):
     """Line Preprocessing"""
-
+    sequence = [
+        (key, value.translate(str.maketrans("", "", string.punctuation)).lower())
+        for key, value in sequence
+    ]
+    return sequence
 
 #
 # Escriba una función llamada maper que recibe una lista de tuplas de la
@@ -63,6 +91,8 @@ def line_preprocessing(sequence):
 #
 def mapper(sequence):
     """Mapper"""
+    return [(word, 1) for _, value in sequence for word in value.split()]
+
 
 
 #
@@ -123,6 +153,11 @@ def create_marker(output_directory):
 #
 def run_job(input_directory, output_directory):
     """Job"""
+    
+    sequence = load_input(input_directory)
+    sequence = line_preprocessing(sequence)
+    sequence = mapper(sequence)
+    pprint(sequence[:5])
 
 
 if __name__ == "__main__":
