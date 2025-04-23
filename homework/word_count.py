@@ -10,7 +10,6 @@ import time
 import string
 from itertools import groupby
 
-
 #
 # Escriba la funcion que  genere n copias de los archivos de texto en la
 # carpeta files/raw en la carpeta files/input. El nombre de los archivos
