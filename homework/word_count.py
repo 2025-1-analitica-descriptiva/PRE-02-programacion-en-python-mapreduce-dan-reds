@@ -150,12 +150,14 @@ def create_marker(output_directory):
 #
 # Escriba la función job, la cual orquesta las funciones anteriores.
 #
+
+from pprint import pprint
 def run_job(input_directory, output_directory):
     """Job"""
-    
+
     sequence = load_input(input_directory)
     sequence = line_preprocessing(sequence)
-    sequence = mapper(sequence)
+    sequence =  mapper(sequence)
     pprint(sequence[:5])
 
 
